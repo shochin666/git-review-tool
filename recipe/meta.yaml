@@ -1,0 +1,52 @@
+{% set name = "git-review-tool" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  path: ..  # プロジェクトルートを指定
+
+build:
+  noarch: python  # プラットフォーム非依存
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - git-review = git_review.cli:main
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=61.0
+  run:
+    - python >=3.8
+    - click >=8.0.0
+    - requests >=2.25.0
+    - rich >=10.0.0
+
+test:
+  imports:
+    - git_review
+    - git_review.cli
+    - git_review.diff_parser
+    - git_review.message_generator
+  commands:
+    - git-review --help
+    - git-review --version
+
+about:
+  home: https://github.com/yourusername/git-review-tool
+  license: MIT
+  license_file: LICENSE
+  summary: 'Automated PR review and commit message generator from git diff'
+  description: |
+    PR Review Tool analyzes git diffs and automatically generates
+    well-formatted commit messages following Conventional Commits.
+  dev_url: https://github.com/yourusername/git-review-tool
+  doc_url: https://github.com/yourusername/git-review-tool/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - yourusername
