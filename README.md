@@ -7,3 +7,9 @@ Git 差分を解析してコミットメッセージを自動生成する CLI �
 ```bash
 conda install -c your-channel git-review-tool
 ```
+
+## テスト
+
+```
+pytest -s [test_module]
+```
