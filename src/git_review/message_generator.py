@@ -132,6 +132,8 @@ class MessageGenerator:
         """本文を生成"""
         lines = []
 
+        # FIXME: AIを使ってメッセージを作成する処理を追加
+
         for change in changes:
             lines.append(f"- {change.filepath}:")
             lines.append(f"  - {change.change_type.capitalize()}")
