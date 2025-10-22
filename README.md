@@ -10,6 +10,8 @@ conda install -c your-channel git-review-tool
 
 ## テスト
 
+※ テストは必ずルートディレクトリにいることを確認して行うこと。
+
 ```
 pytest -s [test_module]
 ```

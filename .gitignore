@@ -4,3 +4,5 @@ src/*.egg-info
 build/
 dist/
 .pytest_cache/
+
+.env
