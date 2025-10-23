@@ -82,6 +82,7 @@ class MessageGenerator:
 
     def _determine_commit_type(self, changes: List[FileChange]) -> str:
         """コミットタイプを判定"""
+        # FIXME: 処理が煩雑なのでAIで判定する
         # 新規追加が多い場合
         if sum(1 for c in changes if c.change_type == "added") > len(changes) / 2:
             return "feat"
