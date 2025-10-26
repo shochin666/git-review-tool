@@ -4,8 +4,8 @@ from typing import List
 
 from git_review.diff_parser import FileChange
 
-# from service.gemini import get_gemini_response
-# from service.monday.api import fetch_monday_item_details
+from service.gemini import get_gemini_response
+from service.monday.api import fetch_monday_item_details
 
 
 class MessageGenerator:
@@ -140,15 +140,15 @@ class MessageGenerator:
         # FIXME: AIを使ってメッセージを作成する処理を追加
 
         # 1. monday(タスクタイトル、タスク詳細)
-        # monday_task = fetch_monday_item_details()
+        monday_task = fetch_monday_item_details()
 
         # 2. git diff
-        # changes
+        changes
 
         # 3. 影響範囲(クローリングするためのコードを実装)
 
         # AIで上記の情報を入れて処理
-        # generated_message = get_gemini_response(prompt="")
+        generated_message = get_gemini_response(prompt="")
 
         for change in changes:
             lines.append(f"- {change.filepath}:")
