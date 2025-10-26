@@ -150,9 +150,9 @@ class MessageGenerator:
         # AIで上記の情報を入れて処理
         generated_message = get_gemini_response(prompt="")
 
-        for change in changes:
-            lines.append(f"- {change.filepath}:")
-            lines.append(f"  - {change.change_type.capitalize()}")
-            lines.append(f"  - +{change.additions}/-{change.deletions} lines")
+        # for change in changes:
+        #     lines.append(f"- {change.filepath}:")
+        #     lines.append(f"  - {change.change_type.capitalize()}")
+        #     lines.append(f"  - +{change.additions}/-{change.deletions} lines")
 
         return "\n".join(lines)
