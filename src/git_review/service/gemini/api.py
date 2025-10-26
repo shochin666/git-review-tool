@@ -23,18 +23,3 @@ def get_gemini_response(prompt: str) -> str:
 
     response = client.models.generate_content(model=model, contents=prompt)
     return response.text
-
-if __name__ == "__main__":
-    env = Environment(loader=FileSystemLoader("src/git_review/gemini/templates"))
-    query_template = env.get_template("generate_commitmessage.jinja")
-
-    query = query_template.render(task_title="ユーザー登録時のメールアドレス重複チェック機能を追加",
-                                  task_description="ユーザーの誤登録防止のため、新規登録時に入力されたメールアドレスが既にデータベースに存在するかを確認する機能が必要です。",
-                                  git_diff="`+ if User.objects.filter(email=email).exists():`",
-                                  impact_scope="test1.py line45 test2.py line78"
-                                  )
-    result = get_gemini_response(prompt=query)
-
-    print("*" * 30)
-    print(result)
-    print("*" * 30)

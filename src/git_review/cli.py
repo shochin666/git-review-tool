@@ -5,9 +5,13 @@ import subprocess
 from pathlib import Path
 from rich.console import Console
 from rich.syntax import Syntax
+import json
 
 from git_review.diff_parser import DiffParser
 from git_review.message_generator import MessageGenerator
+from git_review.service.gemini.api import get_gemini_response
+from git_review.utils.collect_methods import search_function_usage
+
 
 console = Console()
 
@@ -61,9 +65,49 @@ def main(files, staged, output, format):
         parser = DiffParser()
         changes = parser.parse(diff_content)
 
+        # 変更点に該当する箇所を特定
+        staged_methods_info_str = get_gemini_response(
+            prompt=f"""
+                ```json
+                [
+                    {{
+                        "file_path": "str",          # 変更されたファイルのパス
+                        "class_name": "str",         # 変更されたクラス名（存在しない場合は空文字列）
+                        "method_name": "str",        # 変更されたメソッド名（存在しない場合は空文字列）
+                        "function_name": "str",      # 変更された関数名（存在しない場合は空文字列）
+                    }},
+                    ...
+                ]
+                ```
+
+                ```git diffの内容
+                {diff_content}
+                ```
+            """
+        )
+        staged_methods_info_str = staged_methods_info_str.strip("```").strip("json")
+        staged_methods_info_json = json.loads(staged_methods_info_str)
+
+        for staged_method in staged_methods_info_json:
+            print(f"{staged_method['class_name']}.{staged_method['method_name']}")
+
+        impact_scope = [
+            search_function_usage(
+                "src",
+                func_fullname=(
+                    staged_method["function_name"]
+                    if staged_method["function_name"]
+                    else (
+                        f"{staged_method['class_name']}.{staged_method['method_name']}"
+                    )
+                ),
+            )
+            for staged_method in staged_methods_info_json
+        ]
+
         # コミットメッセージを生成
         generator = MessageGenerator(format=format)
-        message = generator.generate(changes)
+        message = generator.generate(changes, impact_scope)
 
         # 結果を表示
         console.print("\n[bold green]✅ 生成されたコミットメッセージ:[/bold green]\n")
