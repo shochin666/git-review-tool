@@ -4,9 +4,10 @@ from typing import List
 
 from git_review.diff_parser import FileChange
 
-from service.gemini import get_gemini_response
-from service.monday.api import fetch_monday_item_details
+from .service.gemini.api import get_gemini_response
+from .service.monday.api import fetch_monday_item_details
 
+from jinja2 import Environment, FileSystemLoader
 
 class MessageGenerator:
     """コミットメッセージ生成クラス"""
@@ -140,7 +141,7 @@ class MessageGenerator:
         # FIXME: AIを使ってメッセージを作成する処理を追加
 
         # 1. monday(タスクタイトル、タスク詳細)
-        monday_task = fetch_monday_item_details()
+        monday_task = fetch_monday_item_details(18270951924)
 
         # 2. git diff
         changes
@@ -148,7 +149,26 @@ class MessageGenerator:
         # 3. 影響範囲(クローリングするためのコードを実装)
 
         # AIで上記の情報を入れて処理
-        generated_message = get_gemini_response(prompt="")
+        env = Environment(loader=FileSystemLoader("src/git_review/service/gemini/templates"))
+        query_template = env.get_template("generate_commitmessage.jinja")
+
+        # monday_taskのreturnをアンパック
+        task_name,task_desc = monday_task
+
+        
+        query = query_template.render(
+                                    task_title=task_name,
+                                    task_description=task_desc,
+                                    git_diff= changes,
+                                    impact_scope=""
+                                    ) 
+        
+        generated_message = get_gemini_response(prompt=query) 
+        
+        for question in generated_message:
+            to_split_question = generated_message.split(',')
+            print(to_split_question[0])
+            query = input("Yes or No:") #FIXME: queryはやりすぎ
 
         # for change in changes:
         #     lines.append(f"- {change.filepath}:")
@@ -156,3 +176,7 @@ class MessageGenerator:
         #     lines.append(f"  - +{change.additions}/-{change.deletions} lines")
 
         return "\n".join(lines)
+    
+    # (commitmessage,
+    # question1,
+    # question2)　

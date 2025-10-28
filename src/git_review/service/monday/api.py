@@ -22,7 +22,7 @@ def fetch_monday_item_details(item_id: int):
     apiUrl = "https://api.monday.com/v2"
     headers = {"Authorization": apiKey}
 
-    env = Environment(loader=FileSystemLoader("./templates"))
+    env = Environment(loader=FileSystemLoader("src/git_review/service/monday/templates"))
     query_template = env.get_template("graphql.jinja")
 
     query = query_template.render(item_id=item_id)
