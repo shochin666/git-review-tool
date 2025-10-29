@@ -87,10 +87,7 @@ def main(files, staged, output, format):
         )
         staged_methods_info_str = staged_methods_info_str.strip("```").strip("json")
         staged_methods_info_json = json.loads(staged_methods_info_str)
-
-        for staged_method in staged_methods_info_json:
-            print(f"{staged_method['class_name']}.{staged_method['method_name']}")
-
+        
         impact_scope = [
             search_function_usage(
                 "src",

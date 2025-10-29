@@ -22,8 +22,4 @@ def get_gemini_response(prompt: str) -> str:
     client = genai.Client(api_key=api_key)
 
     response = client.models.generate_content(model=model, contents=prompt)
-<<<<<<< Updated upstream
     return response.text
-=======
-    return response.text
->>>>>>> Stashed changes

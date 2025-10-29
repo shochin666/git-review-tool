@@ -8,6 +8,7 @@ from .service.gemini.api import get_gemini_response
 from .service.monday.api import fetch_monday_item_details
 
 from jinja2 import Environment, FileSystemLoader
+import json
 
 class MessageGenerator:
     """コミットメッセージ生成クラス"""
@@ -19,7 +20,7 @@ class MessageGenerator:
         """
         self.format = format
 
-    def generate(self, changes: List[FileChange]) -> str:
+    def generate(self, changes: List[FileChange], impact_scope: List[List]) -> str:
         """
         変更情報からコミットメッセージを生成
 
@@ -30,31 +31,23 @@ class MessageGenerator:
             生成されたコミットメッセージ
         """
         if self.format == "conventional":
-            return self._generate_conventional(changes)
+            return self._generate_conventional(changes,impact_scope)
         elif self.format == "simple":
             return self._generate_simple(changes)
         else:
             return self._generate_detailed(changes)
 
-    def _generate_conventional(self, changes: List[FileChange]) -> str:
+    def _generate_conventional(self, changes: List[FileChange], impact_scope: List[List]) -> str:
         """Conventional Commits形式で生成"""
         # 変更タイプを判定
         commit_type = self._determine_commit_type(changes)
 
-        # スコープを決定（最初のファイルのディレクトリ）
-        scope = self._extract_scope(changes)
-
-        # 短い説明を生成
-        subject = self._generate_subject(changes)
-
         # 本文を生成
-        body = self._generate_body(changes)
+        body = self._generate_body(changes, impact_scope)
 
         # フォーマット
         message = f"{commit_type}"
-        if scope:
-            message += f"({scope})"
-        message += f": {subject}\n\n{body}"
+        message += f": \n {body}"
 
         return message
 
@@ -134,7 +127,7 @@ class MessageGenerator:
         else:
             return f"update {len(changes)} files"
 
-    def _generate_body(self, changes: List[FileChange]) -> str:
+    def _generate_body(self, changes: List[FileChange], impact_scope: List[List]) -> str:
         """本文を生成"""
         lines = []
 
@@ -160,16 +153,13 @@ class MessageGenerator:
                                     task_title=task_name,
                                     task_description=task_desc,
                                     git_diff= changes,
-                                    impact_scope=""
+                                    impact_scope= impact_scope
                                     ) 
         
         generated_message = get_gemini_response(prompt=query) 
-        
-        for question in generated_message:
-            to_split_question = generated_message.split(',')
-            print(to_split_question[0])
-            query = input("Yes or No:") #FIXME: queryはやりすぎ
-
+        print(generated_message)
+        # questions = json.loads(generated_message)
+        # print(questions)
         # for change in changes:
         #     lines.append(f"- {change.filepath}:")
         #     lines.append(f"  - {change.change_type.capitalize()}")
