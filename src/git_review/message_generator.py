@@ -1,14 +1,13 @@
-"""Commit message generator module."""
+import sys
 
 from typing import List
+from jinja2 import Environment, FileSystemLoader
 
 from git_review.diff_parser import FileChange
-
 from .service.gemini.api import get_gemini_response
 from .service.monday.api import fetch_monday_item_details
 
-from jinja2 import Environment, FileSystemLoader
-import json
+
 
 class MessageGenerator:
     """コミットメッセージ生成クラス"""
@@ -133,13 +132,7 @@ class MessageGenerator:
 
         # FIXME: AIを使ってメッセージを作成する処理を追加
 
-        # 1. monday(タスクタイトル、タスク詳細)
         monday_task = fetch_monday_item_details(18270951924)
-
-        # 2. git diff
-        changes
-
-        # 3. 影響範囲(クローリングするためのコードを実装)
 
         # AIで上記の情報を入れて処理
         env = Environment(loader=FileSystemLoader("src/git_review/service/gemini/templates"))
@@ -152,21 +145,18 @@ class MessageGenerator:
         query = query_template.render(
                                     task_title=task_name,
                                     task_description=task_desc,
-                                    git_diff= changes,
-                                    impact_scope= impact_scope
+                                    git_diff=changes,
+                                    impact_scope=impact_scope
                                     ) 
         
         generated_message = get_gemini_response(prompt=query)
-        print(generated_message)
-        # questions = generated_message.split(",")
-        # for question in questions:
-        #     print(question)
+
+        # sys.stdout.write("\f{}".format(generated_message))
+        answer = input()
+        print(answer)
         
         # query = query_template.render(
-        #                             task_title=task_name,
-        #                             task_description=task_desc,
-        #                             git_diff= changes,
-        #                             impact_scope= impact_scope
+        #                             
         #                             ) 
         
         return "\n".join(lines)
