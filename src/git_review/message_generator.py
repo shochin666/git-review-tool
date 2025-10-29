@@ -143,7 +143,7 @@ class MessageGenerator:
 
         # AIで上記の情報を入れて処理
         env = Environment(loader=FileSystemLoader("src/git_review/service/gemini/templates"))
-        query_template = env.get_template("generate_commitmessage.jinja")
+        query_template = env.get_template("asking_questions.jinja")
 
         # monday_taskのreturnをアンパック
         task_name,task_desc = monday_task
@@ -156,15 +156,19 @@ class MessageGenerator:
                                     impact_scope= impact_scope
                                     ) 
         
-        generated_message = get_gemini_response(prompt=query) 
+        generated_message = get_gemini_response(prompt=query)
         print(generated_message)
-        # questions = json.loads(generated_message)
-        # print(questions)
-        # for change in changes:
-        #     lines.append(f"- {change.filepath}:")
-        #     lines.append(f"  - {change.change_type.capitalize()}")
-        #     lines.append(f"  - +{change.additions}/-{change.deletions} lines")
-
+        # questions = generated_message.split(",")
+        # for question in questions:
+        #     print(question)
+        
+        # query = query_template.render(
+        #                             task_title=task_name,
+        #                             task_description=task_desc,
+        #                             git_diff= changes,
+        #                             impact_scope= impact_scope
+        #                             ) 
+        
         return "\n".join(lines)
     
     # (commitmessage,
