@@ -1,6 +1,7 @@
 """Tests for CLI module."""
 
 import sys
+import io
 
 sys.path.append("src")
 
@@ -32,3 +33,13 @@ def test_cli_staged():
     assert result.exit_code == 0
     assert "生成されたコミットメッセージ" in result.output
     print(result.output)
+
+def test_io_stream():
+    """入力のテスト"""
+    runner = CliRunner()
+    result = runner.invoke(main, ["--staged"], input="1.\n")
+    assert result.exit_code == 0
+    assert "生成されたコミットメッセージ" in result.output
+    print("*" * 20)
+    print(result.output)
+    print("*" * 20)

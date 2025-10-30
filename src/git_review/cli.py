@@ -1,5 +1,6 @@
 """CLI entry point for PR Review Tool."""
-
+import sys
+import io
 import click
 import subprocess
 from pathlib import Path
@@ -152,6 +153,15 @@ def copy_to_clipboard(text):
     except ImportError:
         # pyperclipがインストールされていない場合はスキップ
         pass
+
+def stub_stdin(testcase_inst, inputs):
+    stdin = sys.stdin
+
+    def cleanup():
+        sys.stdin = stdin
+
+    testcase_inst.addCleanup(cleanup)
+    sys.stdin = io.StringIO(inputs)
 
 
 if __name__ == "__main__":

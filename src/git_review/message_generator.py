@@ -1,4 +1,6 @@
 import sys
+import io
+import unittest
 
 from typing import List
 from jinja2 import Environment, FileSystemLoader
@@ -11,7 +13,7 @@ from .service.monday.api import fetch_monday_item_details
 
 class MessageGenerator:
     """コミットメッセージ生成クラス"""
-
+    
     def __init__(self, format: str = "conventional"):
         """
         Args:
@@ -132,33 +134,40 @@ class MessageGenerator:
 
         # FIXME: AIを使ってメッセージを作成する処理を追加
 
-        monday_task = fetch_monday_item_details(18270951924)
+        monday_task = fetch_monday_item_details(18308114586)
 
         # AIで上記の情報を入れて処理
         env = Environment(loader=FileSystemLoader("src/git_review/service/gemini/templates"))
         query_template = env.get_template("asking_questions.jinja")
 
         # monday_taskのreturnをアンパック
-        task_name,task_desc = monday_task
+        task_title,task_description = monday_task
 
-        
         query = query_template.render(
-                                    task_title=task_name,
-                                    task_description=task_desc,
+                                    task_title=task_title,
+                                    task_description=task_description,
                                     git_diff=changes,
                                     impact_scope=impact_scope
                                     ) 
         
-        generated_message = get_gemini_response(prompt=query)
+        given_tasks = get_gemini_response(prompt=query)
 
-        # sys.stdout.write("\f{}".format(generated_message))
-        answer = input()
-        print(answer)
-        
-        # query = query_template.render(
-        #                             
-        #                             ) 
-        
+        sys.stdout.write("\f{}".format(given_tasks))
+        answer = input("今回のコミットで対応している要素について、カンマ区切りで入力して下さい。 例）1,4,6 ")
+        print(f"\n{answer=}")
+
+        # generate_commitmessages 
+        query_template = env.get_template("generate_commitmessage.jinja")
+        query = query_template.render(
+                                    given_tasks=given_tasks,
+                                    answer=answer,
+                                    git_diff=changes
+        )
+
+        print(f"{query=}")
+        generated_message = get_gemini_response(prompt=query)
+        sys.stdout.write("\f{}".format(generated_message))
+
         return "\n".join(lines)
     
     # (commitmessage,

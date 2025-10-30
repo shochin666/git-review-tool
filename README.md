@@ -15,5 +15,3 @@ conda install -c your-channel git-review-tool
 ```
 pytest -s [test_module]
 ```
-
-#nyuuryoku
