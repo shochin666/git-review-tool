@@ -37,7 +37,7 @@ def test_cli_staged():
 def test_io_stream():
     """入力のテスト"""
     runner = CliRunner()
-    result = runner.invoke(main, ["--staged"], input="1.\n")
+    result = runner.invoke(main, ["--staged"], input="1, 2\n")
     assert result.exit_code == 0
     assert "生成されたコミットメッセージ" in result.output
     print("*" * 20)

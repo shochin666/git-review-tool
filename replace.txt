@@ -1,0 +1,16 @@
+```json
+{
+  "type": "feat",
+  "commit_message": "pytestに与える引数を一部変更しました。
+
+
+影響範囲:
+├── src/
+│   └── git_review/
+│       ├── cli.py (MessageGenerator.generate():108)
+│       └── message_generator.py
+│           ├── MessageGenerator._generate_conventional():35
+│           └── MessageGenerator._generate_conventional():39
+"
+}
+```

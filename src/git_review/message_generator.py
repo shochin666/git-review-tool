@@ -35,6 +35,8 @@ class MessageGenerator:
             return self._generate_conventional(changes,impact_scope)
         elif self.format == "simple":
             return self._generate_simple(changes)
+        elif self.format == "muscle":
+            return self._generate_conventional(changes,impact_scope)
         else:
             return self._generate_detailed(changes)
 
@@ -134,7 +136,7 @@ class MessageGenerator:
 
         # FIXME: AIを使ってメッセージを作成する処理を追加
 
-        monday_task = fetch_monday_item_details(18316433729)
+        monday_task = fetch_monday_item_details(18316701398)
 
         # AIで上記の情報を入れて処理
         env = Environment(loader=FileSystemLoader("src/git_review/service/gemini/templates"))
@@ -162,9 +164,9 @@ class MessageGenerator:
                                     task_title=task_title,
                                     given_tasks=given_tasks,
                                     answer=answer,
-                                    git_diff=changes
+                                    git_diff=changes,
+                                    impact_scope=impact_scope
         )
-
         print(f"{query=}")
         generated_message = get_gemini_response(prompt=query)
         sys.stdout.write("\f{}".format(generated_message))
