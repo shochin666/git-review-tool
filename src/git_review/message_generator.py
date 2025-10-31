@@ -138,7 +138,7 @@ class MessageGenerator:
 
         # AIで上記の情報を入れて処理
         env = Environment(loader=FileSystemLoader("src/git_review/service/gemini/templates"))
-        query_template = env.get_template("asking_questions.jinja")
+        query_template = env.get_template("breakdown_task.jinja")
 
         # monday_taskのreturnをアンパック
         task_title,task_description = monday_task
