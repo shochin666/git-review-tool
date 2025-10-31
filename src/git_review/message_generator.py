@@ -134,7 +134,7 @@ class MessageGenerator:
 
         # FIXME: AIを使ってメッセージを作成する処理を追加
 
-        monday_task = fetch_monday_item_details(18308114586)
+        monday_task = fetch_monday_item_details(18315450202)
 
         # AIで上記の情報を入れて処理
         env = Environment(loader=FileSystemLoader("src/git_review/service/gemini/templates"))
@@ -158,7 +158,11 @@ class MessageGenerator:
 
         # generate_commitmessages 
         query_template = env.get_template("generate_commitmessage.jinja")
+        print("*" * 10)
+        print(f"{task_description=}")
+        print("*" * 10)
         query = query_template.render(
+                                    task_title=task_title,
                                     given_tasks=given_tasks,
                                     answer=answer,
                                     git_diff=changes
